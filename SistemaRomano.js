@@ -196,8 +196,8 @@ let repetitiveNumber = (charAt, numberToValidate) => {
 }
 
 
-arabToRoman("MCCCXXXV");
-romanToArab(1335);
+arabToRoman("imim");
+romanToArab(2002);
 
 /*
 # Segunda Kata

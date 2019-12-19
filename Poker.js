@@ -5,27 +5,32 @@ let packOfcards = ["AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "TS", "
 
 let stop = true;
 let highC = [];
+let p1 = "";
+let p2 = "";
 
 const poker = {
-    "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8,
-    "9": 9, "T": 10, "J": 11, "Q": 12, "K": 13, "A": 14
+    "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "T": 10, "J": 11, "Q": 12, "K": 13, "A": 14
 };
 
 const player1 = {
     mano: [],
     play: "",
     value: 0,
-    msj: "player1 wins by"
+    msj: "player1 wins by",
+    deckStick: ""
 };
 
 const player2 = {
     mano: [],
     play: "",
     value: 0,
-    msj: "player2 wins by"
+    msj: "player2 wins by",
+    deckStick: ""
 };
 
 const secondPackOfcards = packOfcards.join('');
+
+const threePackOfcards = ["A23456789TJQKA"];
 
 const removeAses = () => {
     for (let x = 0; x < packOfcards.length; x++) {
@@ -35,26 +40,38 @@ const removeAses = () => {
     }
 };
 
-const handString = (hands) => {
-    if (stop) {
-        hands.push(player1.mano.join(''), player2.mano.join(''));
-        for (let i = 0; i < 5; i++) {
-            hands[0] = hands[0].replace(/[SHDC]/, '');
-            hands[1] = hands[1].replace(/[SHDC]/, '');
-        }
+const getKeys = (object, value) => {
+    return Object.keys(object).find(key => object[key] === value);
+};
 
-    } else {
-        hands.push(player1.mano.join(''), player2.mano.join(''));
-        for (let x = 0; x < 5; x++) {
-            hands[0] = hands[0].replace(/[123456789TJQKA]/, '');
-            hands[1] = hands[1].replace(/[123456789TJQKA]/, '');
-        }
-        stop = true;
-        return hands;
+const handSticks = (hands) => {
+    let count = 1;
+    hands.push(player1.mano.join(''), player2.mano.join(''));
+    for (let x = 0; x < 5; x++) {
+        hands[0] = hands[0].replace(/[123456789TJQKA]/, '');
+        hands[1] = hands[1].replace(/[123456789TJQKA]/, '');
     }
-    stop = false;
+
+    for (let x = 0; x < hands[0].length; x++) {
+        if (hands[0][x] === hands[0][x + 1]) {
+            count++
+            if (count === 5) {
+                player1.play = "flush";
+            }
+        }
+    }
+    count = 1;
+    for (let x = 0; x < hands[1].length; x++) {
+        if (hands[1][x] === hands[1][x + 1]) {
+            count++
+            if (count === 5) {
+                player2.play = "flush";
+            }
+        }
+    }
+
     return hands;
-}
+};
 
 const handGenerator = () => {
     let playCard = 0;
@@ -69,68 +86,140 @@ const handGenerator = () => {
         packOfcards.splice(playCard, 1);
         g--;
     }
+    player1.mano = ["4D", "4D", "7D", "7D", "7D"];
+    player2.mano = ["3D", "8D", "3S", "8H", "8D"];
+    p1 = ["4D", "4D", "7D", "7D", "7D"];
+    p2 = ["JD", "8D", "JS", "JH", "8D"];
     straightFlush();
 };
 
-const straightFlush = () => {
-    let gamester1 = player1.mano.join('');
-    let gamester2 = player2.mano.join('');
-    let g1 = new RegExp(gamester1);
-    let g2 = new RegExp(gamester2);
-    let test1 = g1.test(secondPackOfcards);
-    let test2 = g2.test(secondPackOfcards);
-    if (test1 === true) {
-        player1.play = "straight flush";
-    }
-    if (test2 === true) {
-        player2.play = "straight flush";
+const orderCards = () => {
+    let regExp = /2345A/;
+    let trap1 = true;
+    let trap2 = true;
+    for (let i = 0; i < p1.length; i++) {
+        p1[i] = p1[i].replace(/[SHDC]/, '');
+        p1[i] = poker[p1[i]];
     }
 
-    if (test1 === true && test2 === true) {
-        if (gamester1[0] === "T" && gamester2[0] === "T") {
-            return console.log(`Draw because both have the same play -> ${player1.play} ${player2.play}`);
-        } else if (gamester1[0] === "T") {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
-        } else if (gamester2[0] === "T") {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+    for (let i = 0; i < p2.length; i++) {
+        p2[i] = p2[i].replace(/[SHDC]/, '');
+        p2[i] = poker[p2[i]];
+    }
+
+    p1 = p1.sort(function (a, b) { return a - b; });
+    p2 = p2.sort(function (a, b) { return a - b; });
+
+    for (let i = 0; i < p1.length; i++) {
+        p1[i] = getKeys(poker, p1[i]);
+    }
+
+    for (let i = 0; i < p2.length; i++) {
+        p2[i] = getKeys(poker, p2[i]);
+    }
+
+    p1 = p1.join('');
+    p2 = p2.join('');
+
+    trap1 = regExp.test(p1);
+    trap2 = regExp.test(p2);
+
+    if (trap1 === true || trap2 === true) {
+        if (trap1) {
+            p1 = p1.replace(regExp, "A2345");
         } else {
-            if (gamester1[0] !== "A" && gamester1[0] > gamester2[0]) {
-                return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
-            } else {
-                return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
-            }
+            p2 = p2.replace(regExp, "A2345");
         }
-    } else if (test1 === true) {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
-    } else if (test2 === true) {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
-    } else {
-        fourOfAKind();
     }
 };
 
+const straightFlush = () => {
+    let tryColors = [];
+    handSticks(tryColors);
+    orderCards();
+    highCard();
+    let g1 = new RegExp(p1);
+    let g2 = new RegExp(p2);
+    let straight1 = g1.test(threePackOfcards);
+    let straight2 = g2.test(threePackOfcards);
+
+    if (straight1 === true && straight2 === true) {
+
+        if (player1.play === "flush") {
+            player1.play = "straight flush";
+        }
+        if (player2.play === "flush") {
+            player2.play = "straight flush";
+        }
+
+        if (player1.play === "flush" && player2.play === "flush") {
+            if (p1.charAt(0) === "T" && p2.charAt(0) === "T") {
+                return console.log(`Draw because both have the same play -> ${player1.play} ${player2.play}`);
+            } else if (p1.charAt(0) === "T") {
+                return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+            } else if (p2.charAt(0) === "T") {
+                return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            } else {
+                if (p1.charAt(0) === "A") {
+                    return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                } else if (p2.charAt(0) === "A") {
+                    return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                } else {
+                    if (player1.value > player2.value) {
+                        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                    } else {
+                        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                    }
+                }
+            }
+        } else {
+            player1.play = "straight";
+            player2.play = "straight";
+            straight();
+        }
+    } else if (player1.play === "flush" && straight1 === true) {
+        player1.play = "straight flush";
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+    } else if (player2.play === "flush" && straight2 === true) {
+        player1.play = "straight flush";
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+    } else if (straight1 === true) {
+        player1.play = "straight";
+    } else if (straight2 === true) {
+        player2.play = "straight";
+    }
+
+    fourOfAKind();
+};
+
 const fourOfAKind = () => {
-    //  player1.mano = ["2SAHACADAH"];
-    //  player2.mano = ["2SQHQCQDQH"];
     let count = 1;
-    let hands = [];
-    hands = handString(hands);
-    for (let x = 0; x < hands[0].length; x++) {
-        if (hands[0][x] === hands[0][x + 1]) {
+    for (let x = 0; x < p1.length; x++) {
+        if (p1[x] === p1[x + 1]) {
             count++
             if (count === 4) {
-                player1.play = "poker";
-                player1.value = poker[hands[0][1]];
+                if (p1.charAt(0) === p1.charAt(0 + 1)) {
+                    player1.play = "fullHouse";
+                    player1.value = poker[p1[2]];
+                } else {
+                    player1.play = "poker";
+                    player1.value = poker[p1[1]];
+                }
             }
         }
     }
     count = 1;
-    for (let x = 0; x < hands[1].length; x++) {
-        if (hands[1][x] === hands[1][x + 1]) {
+    for (let x = 0; x < p2.length; x++) {
+        if (p2[x] === p2[x + 1]) {
             count++
             if (count === 4) {
-                player2.play = "poker";
-                player2.value = poker[hands[1][1]];
+                if (p2.charAt(0) === p2.charAt(0 + 1)) {
+                    player2.play = "fullHouse";
+                    player2.value = poker[p2[2]];
+                } else {
+                    player2.play = "poker";
+                    player2.value = poker[p2[1]];
+                }
             }
         }
     }
@@ -145,48 +234,63 @@ const fourOfAKind = () => {
         return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
     } else if (player1.play !== "poker" && player2.play === "poker") {
         return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
-    } else {
-        fullHouse();
     }
+    fullHouse();
 };
 
 const fullHouse = () => {
+
+    if (player1.play === "fullHouse" && player2.play === "fullHouse") {
+        if (player1.value > player2.value) {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        } else {
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        }
+    } else if (player1.play === "fullHouse" && player2.play !== "fullHouse") {
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+    } else if (player1.play !== "fullHouse" && player2.play === "fullHouse") {
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+    }
     flush();
 }
 
 const flush = () => {
-    player1.mano = ["AS5S7SQS2S"];
-    player2.mano = ["2HQH3H9HKH"];
-    let count = 0;
     let handsColors = [];
-    handsColors = handString(handsColors);
+    handsColors = handSticks(handsColors);
 
-    for (let x = 0; x < handsColors[0].length; x++) {
-        if (handsColors[0][x] === handsColors[0][x + 1]) {
-            count++
-            if (count === 5) {
-                player1.play = "flush";
 
-            }
+    if (player1.play === "flush" && player2.play === "flush") {
+        if (player1.value === player2.value) {
+            return console.log(`Draw because both have the same play -> ${player1.play} to ${player1.deckStick}`)
+        } else if (player1.value > player2.value) {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
+        } else if (player1.value < player2.value) {
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         }
+    } else if (player1.play === "flush" && player2.play !== "flush") {
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
+    } else if (player1.play !== "flush" && player2.play === "flush") {
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
+    } else {
+        straight();
     }
-    count = 1;
-    for (let x = 0; x < handsColors[1].length; x++) {
-        if (handsColors[1][x] === handsColors[1][x + 1]) {
-            count++
-            if (count === 5) {
-                player2.play = "flush";
-
-            }
-        }
-    }
-
-    straight()
 }
 
 const straight = () => {
-
-    threeOfAKind()
+    if (player1.play === "straight" && player2.play === "straight") {
+        if (p1.charAt(0) === "A") {
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        } else if (p2.charAt(0) === "A") {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        } else {
+            if (player1.value > player2.value) {
+                return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+            } else {
+                return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            }
+        }
+    }
+    threeOfAKind();
 }
 
 const threeOfAKind = () => {
@@ -200,34 +304,43 @@ const twoPairs = () => {
 }
 
 const pair = () => {
-
-
+    player1.play = "highCard";
+    player2.play = "highCard";
+    highCard()
 }
 
 const highCard = () => {
-    let p1 = 0;
-    let p2 = 0;
-    let handPlayer1 = player1.mano.join('');
-    let handPlayer2 = player2.mano.join('');
-    for (let i = 0; i < 5; i++) {
-        handPlayer2 = handPlayer2.replace(/[SHDC]/, '');
-        handPlayer1 = handPlayer1.replace(/[SHDC]/, '');
+
+    if (player1.play === "highCard" && player2.play === "highCard") {
+        if (player1.value === player2.value) {
+            return console.log(`Draw because both have the same play -> ${player1.play} to ${player1.deckStick}`)
+        } else if (player1.value > player2.value) {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
+        } else if (player1.value < player2.value) {
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
+        }
     }
-    for (let i of handPlayer1) {
+
+    let h1 = 0;
+    let h2 = 0;
+    for (let i of p1) {
         highC.push(poker[i]);
     }
-    p1 = Math.max(...highC);
-    player1.value = p1;
-    highC = [];
-    for (let x of handPlayer2) {
+    h1 = Math.max(...highC);
+    player1.value = h1;
+
+    for (let x of p2) {
         highC.push(poker[x]);
     }
-    p2 = Math.max(...highC);
-    player2.value = p2;
+    h2 = Math.max(...highC);
+    player2.value = h2;
+    player1.deckStick = getKeys(poker, player1.value);
+    player2.deckStick = getKeys(poker, player2.value);
 }
 
 removeAses();
 handGenerator();
+
 
 
 

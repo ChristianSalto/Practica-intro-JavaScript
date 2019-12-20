@@ -113,9 +113,6 @@ let firstAndSecondRule = numberToValidate => {
     let count = 0;
     let validator = true;
     let validatorChar = "";
-    //  let countLetters = [{ I: 0, X: 0, C: 0, M: 0 }, { V: 0, L: 0, D: 0 }];
-
-    // Here we are validating that they just be roman number
 
     for (let i of numberToValidate) {
         for (let x in numberRomanArab) {
@@ -127,7 +124,7 @@ let firstAndSecondRule = numberToValidate => {
 
 
     if (count === numberLength && numberLength !== 0) {
-        //Here no more than three times for letter
+
         for (let i = 0; i < numberToValidate.length; i++) {
             validatorChar = numberToValidate.charAt(i);
             validator = repetitiveNumber(validatorChar, numberToValidate);

@@ -91,7 +91,7 @@ const handGenerator = () => {
         g--;
     }
 
-    /* player1.mano = ["JH", "JS", "8C", "KC", "3C"];
+   /*player1.mano = ["JH", "JS", "8C", "KC", "3C"];  -> // if you don't want to use random()
      player2.mano = ["JH", "JS", "3C", "7C", "8C"];
      p1 = ["JH", "JS", "8C", "KC", "3C"];
      p2 = ["JH", "JS", "3C", "7C", "8C"];*/
@@ -311,7 +311,7 @@ const straight = () => {
         return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
     threeOfAKind();
-}
+};
 
 const threeOfAKind = () => {
 
@@ -375,7 +375,7 @@ const threeOfAKind = () => {
     }
 
     twoPairs();
-}
+};
 
 const twoPairs = () => {
     let highTwoPairs1 = 0;
@@ -416,7 +416,7 @@ const twoPairs = () => {
     }
 
     pair()
-}
+};
 
 const pair = () => {
 
@@ -470,7 +470,7 @@ const pair = () => {
     player1.play = "highCard";
     player2.play = "highCard";
     highCard()
-}
+};
 
 const highCard = () => {
     let draw1 = 0;
@@ -511,7 +511,7 @@ const highCard = () => {
     player2.value = h2;
     player1.deckStick = getKeys(poker, player1.value);
     player2.deckStick = getKeys(poker, player2.value);
-}
+};
 
 
 

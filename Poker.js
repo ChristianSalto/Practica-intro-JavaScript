@@ -91,10 +91,10 @@ const handGenerator = () => {
         g--;
     }
 
-    //player1.mano = ["6C", "4H", "5S", "3C", "2D"];
-    //player2.mano = ["AC", "KH", "AD", "4S", "4S"];
-    //p1 = ["6C", "4H", "5S", "3C", "2D"];
-    //p2 = ["AC", "KH", "AD", "4S", "4S"];
+    /* player1.mano = ["JH", "JS", "8C", "KC", "3C"];
+     player2.mano = ["JH", "JS", "3C", "7C", "8C"];
+     p1 = ["JH", "JS", "8C", "KC", "3C"];
+     p2 = ["JH", "JS", "3C", "7C", "8C"];*/
     console.log(`player1 hand -> ${player1.mano} against player2 hand -> ${player2.mano}\n`);
     straightFlush();
 };
@@ -133,7 +133,8 @@ const orderCards = () => {
     if (trap1 === true || trap2 === true) {
         if (trap1) {
             p1 = p1.replace(regExp, "A2345");
-        } else {
+        }
+        if (trap2) {
             p2 = p2.replace(regExp, "A2345");
         }
     }
@@ -158,37 +159,36 @@ const straightFlush = () => {
             player2.play = "straight flush";
         }
 
-        if (player1.play === "flush" && player2.play === "flush") {
-            if (p1.charAt(0) === "T" && p2.charAt(0) === "T") {
-                return console.log(`Draw because both have the same play -> ${player1.play} ${player2.play}`);
+        if (player1.play === "straight flush" && player2.play === "straight flush") {
+            if (p1.charAt(0) === p2.charAt(0)) {
+                return console.log(`Draw because both have the same play -> ${player1.play} to ${player1.deckStick}`);
             } else if (p1.charAt(0) === "T") {
-                return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
             } else if (p2.charAt(0) === "T") {
-                return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
             } else {
                 if (p1.charAt(0) === "A") {
-                    return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                    return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
                 } else if (p2.charAt(0) === "A") {
-                    return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                    return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
                 } else {
                     if (player1.value > player2.value) {
-                        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
                     } else {
-                        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
                     }
                 }
             }
         } else {
             player1.play = "straight";
             player2.play = "straight";
-            straight();
         }
     } else if (player1.play === "flush" && straight1 === true) {
         player1.play = "straight flush";
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player2.play === "flush" && straight2 === true) {
         player2.play = "straight flush";
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     } else if (straight1 === true) {
         player1.play = "straight";
     } else if (straight2 === true) {
@@ -204,12 +204,14 @@ const fourOfAKind = () => {
         if (p1[x] === p1[x + 1]) {
             count++
             if (count === 4) {
-                if (p1.charAt(0) === p1.charAt(0 + 1)) {
+                if (p1.charAt(2) === p1.charAt(2 + 1) && p1.charAt(2) === p1.charAt(2 - 1)) {
+                    player1.play = "poker";
+                    player1.value = poker[p1[2]];
+                    player1.deckStick = getKeys(poker, player1.value);
+                } else {
                     player1.play = "fullHouse";
                     player1.value = poker[p1[2]];
-                } else {
-                    player1.play = "poker";
-                    player1.value = poker[p1[1]];
+                    player1.deckStick = getKeys(poker, player1.value);
                 }
             }
         }
@@ -219,12 +221,14 @@ const fourOfAKind = () => {
         if (p2[x] === p2[x + 1]) {
             count++
             if (count === 4) {
-                if (p2.charAt(0) === p2.charAt(0 + 1)) {
+                if (p2.charAt(2) === p2.charAt(2 + 1) && p2.charAt(2) === p2.charAt(2 - 1)) {
+                    player2.play = "poker";
+                    player2.value = poker[p2[2]];
+                    player2.deckStick = getKeys(poker, player2.value);
+                } else {
                     player2.play = "fullHouse";
                     player2.value = poker[p2[2]];
-                } else {
-                    player2.play = "poker";
-                    player2.value = poker[p2[1]];
+                    player2.deckStick = getKeys(poker, player2.value);
                 }
             }
         }
@@ -232,14 +236,14 @@ const fourOfAKind = () => {
 
     if (player1.play === "poker" && player2.play === "poker") {
         if (player1.value > player2.value) {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
         } else {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         }
     } else if (player1.play === "poker" && player2.play !== "poker") {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player1.play !== "poker" && player2.play === "poker") {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
     fullHouse();
 };
@@ -248,14 +252,14 @@ const fullHouse = () => {
 
     if (player1.play === "fullHouse" && player2.play === "fullHouse") {
         if (player1.value > player2.value) {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
         } else {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         }
     } else if (player1.play === "fullHouse" && player2.play !== "fullHouse") {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player1.play !== "fullHouse" && player2.play === "fullHouse") {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
     flush();
 };
@@ -266,7 +270,7 @@ const flush = () => {
 
     if (player1.play === "flush" && player2.play === "flush") {
         if (player1.value === player2.value) {
-            return console.log(`Draw because both have the same play -> ${player1.play} to ${player1.deckStick}`)
+            return console.log(`Draw because both have the same play -> ${player1.play} to ${player1.deckStick}`);
         } else if (player1.value > player2.value) {
             return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
         } else if (player1.value < player2.value) {
@@ -276,35 +280,41 @@ const flush = () => {
         return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player1.play !== "flush" && player2.play === "flush") {
         return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
-    } else {
-        straight();
     }
+    straight();
 };
 
 const straight = () => {
     if (player1.play === "straight" && player2.play === "straight") {
-        if (p1.charAt(0) === "A") {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
-        } else if (p2.charAt(0) === "A") {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        if (p1.charAt(0) === p2.charAt(0)) {
+            return console.log(`Draw because both have the same play -> ${player1.play} to ${player1.deckStick}`);
+        } else if (p1.charAt(0) === "T") {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
+        } else if (p2.charAt(0) === "T") {
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         } else {
-            if (player1.value > player2.value) {
-                return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+            if (p1.charAt(0) === "A") {
+                return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
+            } else if (p2.charAt(0) === "A") {
+                return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
             } else {
-                return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                if (player1.value > player2.value) {
+                    return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
+                } else {
+                    return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
+                }
             }
         }
     } else if (player1.play === "straight") {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player2.play === "straight") {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
     threeOfAKind();
 }
 
 const threeOfAKind = () => {
-    let highThree1 = 0;
-    let highThree2 = 0;
+
     let middleCard = "";
     let count3 = 1;
     for (let x = 0; x < p1.length; x++) {
@@ -320,6 +330,8 @@ const threeOfAKind = () => {
                 }
                 if (count3 === 4) {
                     player1.play = "threeOfAKind";
+                    player1.value = poker[p1[2]];
+                    player1.deckStick = getKeys(poker, player1.value);
                 } else {
                     player1.play = "twoPairs";
                 }
@@ -341,6 +353,8 @@ const threeOfAKind = () => {
                 }
                 if (count3 === 4) {
                     player2.play = "threeOfAKind";
+                    player2.value = poker[p2[2]];
+                    player2.deckStick = getKeys(poker, player2.value);
                 } else {
                     player2.play = "twoPairs";
                 }
@@ -349,17 +363,15 @@ const threeOfAKind = () => {
     }
 
     if (player1.play === "threeOfAKind" && player2.play === "threeOfAKind") {
-        highThree1 = poker[p1.charAt(2)];
-        highThree2 = poker[p2.charAt(2)];
-        if (highThree1 > highThree2) {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        if (player1.value > player2.value) {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
         } else {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         }
     } else if (player1.play === "threeOfAKind" && player2.play !== "threeOfAKind") {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player1.play !== "threeOfAKind" && player2.play === "threeOfAKind") {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
 
     twoPairs();
@@ -372,24 +384,24 @@ const twoPairs = () => {
         highTwoPairs1 = poker[p1.charAt(3)];
         highTwoPairs2 = poker[p2.charAt(3)];
         if (highTwoPairs1 > highTwoPairs2) {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
         } else if (highTwoPairs1 < highTwoPairs2) {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         } else {
             highTwoPairs1 = poker[p1.charAt(1)];
             highTwoPairs2 = poker[p2.charAt(1)];
             if (highTwoPairs1 > highTwoPairs2) {
-                return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
             } else if (highTwoPairs1 < highTwoPairs2) {
-                return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
             } else {
                 for (let i = 0; i < p1.length; i++) {
                     player1.value = poker[p1.charAt(i)];
                     player2.value = poker[p2.charAt(i)];
                     if (player1.value > player2.value) {
-                        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+                        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
                     } else if (player1.value < player2.value) {
-                        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+                        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
                     }
                 }
                 player1.deckStick = getKeys(poker, player1.value);
@@ -398,24 +410,24 @@ const twoPairs = () => {
 
         }
     } else if (player1.play === "twoPairs" && player2.play !== "twoPairs") {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player1.play !== "twoPairs" && player2.play === "twoPairs") {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
 
     pair()
 }
 
 const pair = () => {
-    let highPair1 = 0;
-    let highPair2 = 0;
+
     let count4 = 1;
     for (let x = 0; x < p1.length; x++) {
         if (p1[x] === p1[x + 1]) {
             count4++
             if (count4 === 2) {
                 player1.play = "pair";
-                highPair1 = poker[p1.charAt(x)];
+                player1.value = poker[p1[x]];
+                player1.deckStick = getKeys(poker, player1.value);
             }
         }
     }
@@ -425,21 +437,34 @@ const pair = () => {
             count4++
             if (count4 === 2) {
                 player2.play = "pair";
-                highPair2 = poker[p2.charAt(x)];
+                player2.value = poker[p2[x]];
+                player2.deckStick = getKeys(poker, player2.value);
             }
         }
     }
 
     if (player1.play === "pair" && player2.play === "pair") {
-        if (highPair1 > highPair2) {
-            return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        if (player1.value === player2.value) {
+            highCard();
+            if (player1.value === player2.value) {
+                return console.log(`Draw because both have the same play ${player1.play} -> to highCard -> ${player1.deckStick}`);
+            } else {
+                if (player1.value > player2.value) {
+                    return console.log(`${player1.msj} ${player1.play} -> to highCard -> ${player1.deckStick} -> ${player1.mano}`);
+                } else {
+                    return console.log(`${player2.msj} ${player2.play} -> to highCard -> ${player2.deckStick} -> ${player2.mano}`);
+                }
+            }
+        }
+        if (player1.value > player2.value) {
+            return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
         } else {
-            return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+            return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
         }
     } else if (player1.play === "pair" && player2.play !== "pair") {
-        return console.log(`${player1.msj} ${player1.play} -> ${player1.mano}`);
+        return console.log(`${player1.msj} ${player1.play} -> ${player1.deckStick} -> ${player1.mano}`);
     } else if (player1.play !== "pair" && player2.play === "pair") {
-        return console.log(`${player2.msj} ${player2.play} -> ${player2.mano}`);
+        return console.log(`${player2.msj} ${player2.play} -> ${player2.deckStick} -> ${player2.mano}`);
     }
 
     player1.play = "highCard";

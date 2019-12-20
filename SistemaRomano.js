@@ -13,88 +13,97 @@ const numberRomanArab = {
     }
 };
 
-let romanToArab = numberRoman => {
-    let sumRoman = "";
-    let numberString = "";
-    let numberInt = 0;
-    let numberLength = numberRoman.toString().length;
-    numberString = numberRoman.toString();
-    for (let x = 0; x < numberLength; x++) {
-        for (let i of numberString) {
-            if (numberLength === 4) {
-                numberInt = parseInt(i);
-                sumRoman += numberRomanArab.getKeys(numberInt * 1000);
-                numberString = numberString.slice(1);
-                numberLength = numberString.length;
-            } else if (numberLength === 3) {
-                numberInt = parseInt(i);
-                sumRoman += numberRomanArab.getKeys(numberInt * 100);
-                numberString = numberString.slice(1);
-                numberLength = numberString.length;
-            } else if (numberLength === 2) {
-                numberInt = parseInt(i);
-                sumRoman += numberRomanArab.getKeys(numberInt * 10);
-                numberString = numberString.slice(1);
-                numberLength = numberString.length;
-            } else {
-                numberInt = parseInt(i);
-                sumRoman += numberRomanArab.getKeys(numberInt);
-                numberString = numberString.slice(1);
-                numberLength = numberString.length;
+let arabToRoman = numberRoman => {
+    if (numberRoman > 3999 || numberRoman < 1) {
+        console.log("Only numbers smallest of 4000, this number is more higher and greater than 1");
+    } else {
+        let sumRoman = "";
+        let numberString = "";
+        let numberInt = 0;
+
+        let numberLength = numberRoman.toString().length;
+        numberString = numberRoman.toString();
+        for (let x = 0; x < numberLength; x++) {
+            for (let i of numberString) {
+                if (numberLength === 4) {
+                    numberInt = parseInt(i);
+                    sumRoman += numberRomanArab.getKeys(numberInt * 1000);
+                    numberString = numberString.slice(1);
+                    numberLength = numberString.length;
+                } else if (numberLength === 3) {
+                    numberInt = parseInt(i);
+                    sumRoman += numberRomanArab.getKeys(numberInt * 100);
+                    numberString = numberString.slice(1);
+                    numberLength = numberString.length;
+                } else if (numberLength === 2) {
+                    numberInt = parseInt(i);
+                    sumRoman += numberRomanArab.getKeys(numberInt * 10);
+                    numberString = numberString.slice(1);
+                    numberLength = numberString.length;
+                } else {
+                    numberInt = parseInt(i);
+                    sumRoman += numberRomanArab.getKeys(numberInt);
+                    numberString = numberString.slice(1);
+                    numberLength = numberString.length;
+                }
             }
         }
+        console.log(sumRoman)
     }
-    console.log(sumRoman)
 }
 
-let arabToRoman = numberArab => {
-    let countSum = 0;
-    let sumaArab = 0;
-    numberArab = firstAndSecondRule(numberArab);
-    if (numberArab != undefined) {
-        for (countSum; countSum < numberArab.length; countSum++) {
-            if (numberArab[countSum] === "I") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-            } else if (numberArab[countSum] === "V") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-                if (numberArab[countSum - 1] === "I") {
-                    sumaArab -= 2;
+let romanToArab = numberArab => {
+    if (typeof numberArab === "number") {
+        console.log("please only roman numerals");
+    } else {
+        let countSum = 0;
+        let sumaArab = 0;
+        numberArab = firstAndSecondRule(numberArab);
+        if (numberArab != undefined) {
+            for (countSum; countSum < numberArab.length; countSum++) {
+                if (numberArab[countSum] === "I") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                } else if (numberArab[countSum] === "V") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                    if (numberArab[countSum - 1] === "I") {
+                        sumaArab -= 2;
+                    }
+                } else if (numberArab[countSum] === "X") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                    if (numberArab[countSum - 1] === "I") {
+                        sumaArab -= 2;
+                    }
+                } else if (numberArab[countSum] === "L") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                    if (numberArab[countSum - 1] === "X") {
+                        sumaArab -= 20;
+                    }
+                } else if (numberArab[countSum] === "C") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                    if (numberArab[countSum - 1] === "X") {
+                        sumaArab -= 20;
+                    }
+                } else if (numberArab[countSum] === "D") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                    if (numberArab[countSum - 1] === "C") {
+                        sumaArab -= 200;
+                    }
+                } else if (numberArab[countSum] === "M") {
+                    sumaArab += numberRomanArab[numberArab[countSum]];
+                    if (numberArab[countSum - 1] === "C") {
+                        sumaArab -= 200;
+                    }
                 }
-            } else if (numberArab[countSum] === "X") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-                if (numberArab[countSum - 1] === "I") {
-                    sumaArab -= 2;
-                }
-            } else if (numberArab[countSum] === "L") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-                if (numberArab[countSum - 1] === "X") {
-                    sumaArab -= 20;
-                }
-            } else if (numberArab[countSum] === "C") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-                if (numberArab[countSum - 1] === "X") {
-                    sumaArab -= 20;
-                }
-            } else if (numberArab[countSum] === "D") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-                if (numberArab[countSum - 1] === "C") {
-                    sumaArab -= 200;
-                }
-            } else if (numberArab[countSum] === "M") {
-                sumaArab += numberRomanArab[numberArab[countSum]];
-                if (numberArab[countSum - 1] === "C") {
-                    sumaArab -= 200;
-                }
-            }
 
+            }
+        } else {
+            return console.log("Sorry, the number could not be translated");
         }
-    } else {
-        return console.log("Sorry, the number could not be translated");
-    }
-    if (sumaArab < 4000) {
-        console.log(sumaArab);
-    } else {
-        console.log("Only numbers smallest of 4000, this number is more higher")
+        if (sumaArab < 4000) {
+            console.log(sumaArab);
+        } else {
+            console.log("Only numbers smallest of 4000, this number is more higher")
+        }
     }
 }
 
@@ -196,8 +205,8 @@ let repetitiveNumber = (charAt, numberToValidate) => {
 }
 
 
-arabToRoman("imim");
-romanToArab(2002);
+arabToRoman(540);
+romanToArab("DXL");
 
 /*
 # Segunda Kata

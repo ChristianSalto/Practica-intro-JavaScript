@@ -5,7 +5,6 @@ let packOfcards = ["AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "TS", "
     "AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "TD", "JD", "QD", "KD", "AD"];
 
 
-let stop = true;
 let highC = [];
 let p1 = [];
 let p2 = [];
